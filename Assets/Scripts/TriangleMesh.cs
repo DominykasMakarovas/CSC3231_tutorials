@@ -73,8 +73,35 @@ public class TriangleMesh : MonoBehaviour
         filter.mesh = createdMesh;
     }
 
-    void    RenderTriangle()
+    void RenderTriangle()
     {
-        
+        Bounds box = new Bounds(triA, Vector3.zero);
+        box.Encapsulate(triB);
+        box.Encapsulate(triC);
+
+        Vector3 triA2D = new Vector3(triA.x, triA.y, 1.0f);
+        Vector3 triB2D = new Vector3 (triB.x , triB.y, 1.0f);
+        Vector3 triC2D = new Vector3(triC.x, triC.y, 1.0f);
+
+        Vector3 lineAB = Vector3.Cross(triB2D, triA2D);
+        Vector3 lineBC = Vector3.Cross(triC2D, triB2D);
+        Vector3 lineCA = Vector3.Cross(triA2D, triC2D);
+
+        for (float y = box.min.y; y < box.max.y; ++y)
+        {
+            for (float x = box.min.x; x < box.max.x; ++x)
+            {
+                Vector3 screenPos = new Vector3 (x, y,1.0f);
+                
+                float testAB = Vector3.Dot(lineAB, screenPos);
+                float testBC = Vector3.Dot(lineBC, screenPos);
+                float testCA = Vector3.Dot(lineCA, screenPos);
+                
+                if( testAB > 0.0f && testBC > 0.0f && testCA > 0.0f) 
+                {
+                    generatedPoints.Add(screenPos);
+                }
+            }
+        }
     }
 }
